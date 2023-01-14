@@ -7,16 +7,32 @@ namespace ToDoListApp
     class Program
     {
         static List<string> todoList = new List<string>();
+        static string password ="";
 
         static void Main(string[] args)
         {
-            //Read the to-do list from a text file
-            if (File.Exists("todo.txt"))
+
+                 if (File.Exists("todo.txt"))
             {
                 todoList.AddRange(File.ReadAllLines("todo.txt"));
             }
-            //Show the main menu
-            ShowMenu();
+            if (File.Exists("password.txt"))
+            {
+                password = File.ReadAllText("password.txt");
+                Console.Write("Enter the password: ");
+                if (Console.ReadLine() != password)
+                {
+                    Console.WriteLine("Invalid password");
+                    Console.ReadKey();
+                    return;
+                }
+                ShowMenu();
+            }
+            else
+            {
+                ShowMenu();
+            }
+
         }
 
         static void ShowMenu()
@@ -27,6 +43,15 @@ namespace ToDoListApp
             Console.WriteLine("2. Add item");
             Console.WriteLine("3. Remove item");
             Console.WriteLine("4. Exit");
+            if (File.Exists("password.txt"))
+            {
+                Console.WriteLine("5. Change password");
+            }
+            else
+            {
+                Console.WriteLine("5. Create new password");
+            }
+
             Console.Write("Enter your choice: ");
             switch (Console.ReadLine())
             {
@@ -42,6 +67,9 @@ namespace ToDoListApp
                 case "4":
                     ExitApplication();
                     break;
+                case "5":
+                    ChangePassword();
+                    break;
                 default:
                     Console.WriteLine("Invalid choice");
                     Console.ReadKey();
@@ -52,7 +80,6 @@ namespace ToDoListApp
 
         static void ShowList()
         {
-            //Show the current to-do list
             Console.Clear();
             Console.WriteLine("To-Do List:");
             for (int i = 0; i < todoList.Count; i++)
@@ -67,7 +94,6 @@ namespace ToDoListApp
 
         static void AddItem()
         {
-            //Add a new item to the to-do list
             Console.Clear();
             Console.Write("Enter the new item: ");
             var newItem = Console.ReadLine();
@@ -86,7 +112,6 @@ namespace ToDoListApp
 
         static void RemoveItem()
         {
-            //Remove an item from the to-do list
             Console.Clear();
             Console.Write("Enter the item number to remove: ");
             if (int.TryParse(Console.ReadLine(), out int itemNum) && itemNum > 0 && itemNum <= todoList.Count)
@@ -102,11 +127,41 @@ namespace ToDoListApp
             ShowMenu();
         }
 
+
+        static void ChangePassword()
+    {
+    Console.Clear();
+            if (File.Exists("password.txt"))
+            {
+                Console.Write("Enter old password: ");
+                if (Console.ReadLine() != password)
+                {
+                    Console.WriteLine("Invalid password");
+                    Console.ReadKey();
+                    ShowMenu();
+                    return;
+                }
+            }
+    Console.Write("Enter new password: ");
+    var newPassword = Console.ReadLine();
+    Console.Write("Confirm new password: ");
+    if (Console.ReadLine() != newPassword)
+    {
+        Console.WriteLine("Passwords do not match");
+        Console.ReadKey();
+        ShowMenu();
+        return;
+    }
+    password = newPassword;
+    File.WriteAllText("password.txt", newPassword);
+
+            Console.WriteLine("Password changed successfully");
+    Console.ReadKey();
+    ShowMenu();
+}
         static void ExitApplication()
         {
-            //Save the to-do list to a text file
             File.WriteAllLines("todo.txt", todoList);
-            //Exit the application
             Environment.Exit(0);
         }
     }
