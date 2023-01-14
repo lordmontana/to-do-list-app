@@ -52,6 +52,8 @@ namespace ToDoListApp
                 Console.WriteLine("5. Create new password");
             }
 
+            Console.WriteLine("6. Edit item");
+
             Console.Write("Enter your choice: ");
             switch (Console.ReadLine())
             {
@@ -69,6 +71,9 @@ namespace ToDoListApp
                     break;
                 case "5":
                     ChangePassword();
+                    break;
+                case "6":
+                    EditItem();
                     break;
                 default:
                     Console.WriteLine("Invalid choice");
@@ -159,6 +164,37 @@ namespace ToDoListApp
     Console.ReadKey();
     ShowMenu();
 }
+        static void EditItem()
+        {
+            Console.Clear();
+            Console.WriteLine("Enter item number: ");
+            for (int i = 0; i < todoList.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {todoList[i]}");
+            }
+            if (!int.TryParse(Console.ReadLine(), out int itemNum) || itemNum <= 0 || itemNum > todoList.Count)
+            {
+                Console.WriteLine("Invalid item number");
+                Console.ReadKey();
+                ShowMenu();
+                return;
+            }
+            Console.WriteLine($"Current value: {todoList[itemNum - 1]}");
+
+            Console.Write("Enter new value: ");
+            var newValue = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newValue))
+            {
+                Console.WriteLine("Invalid input");
+                Console.ReadKey();
+                ShowMenu();
+                return;
+            }
+            todoList[itemNum - 1] = newValue;
+            Console.WriteLine("Item edited successfully");
+            Console.ReadKey();
+            ShowMenu();
+        }
         static void ExitApplication()
         {
             File.WriteAllLines("todo.txt", todoList);
